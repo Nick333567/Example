@@ -1,0 +1,85 @@
+{
+  "name": "shop_app",
+  "version": "0.0.2",
+  "author": "author name",
+  "description": "Automated deployment and operations for the authentication application",
+  "operations": {
+    "build": {
+      "actions": {
+        "install-deps": {
+          "runner": "command-runner",
+          "comment": "Python 3.4 or better must be installed",
+          "config": {
+            "command": "pip3 install requirement.txt"
+          }
+        },
+        "unittest": {
+          "runner": "command-runner",
+          "comment": "Run Unit Test",
+          "config": {
+            "command": "pytest -m test/"
+          }
+        }
+      }
+    },
+    "start": {
+      "actions": {
+        "mongodb": {
+          "runner": "command-runner",
+          "config": {
+            "command": "mongod --syslog --maxConns 10"
+          }
+        },
+        "authapp": {
+          "runner": "command-runner",
+          "comment": "Start Flask Application",
+          "config": {
+            "command": "flask run Authentication.py"
+          }
+        },
+        "shopapp": {
+          "runner": "command-runner",
+          "comment": "Start Flask Application",
+          "config": {
+            "command": "flask run main.py"
+          }
+        }
+      },
+      "dependencies": [
+        [
+          "mongodb",
+          "authapp",
+          "shopapp"
+        ]
+      ]
+    },
+    "deploy": {
+      "actions": {
+        "deploy-python": {
+          "runner": "command-runner",
+          "config": {
+            "command": "sudo apt-get install python3.6"
+          }
+        },
+        "deploy-mongodb": {
+          "runner": "command-runner",
+          "config": {
+            "command": "sudo apt-get install mongodb-org"
+          }
+        },
+        "build-app": {
+          "runner": "operation-runner",
+          "config": {
+            "operation": "build"
+          }
+        },
+        "start-app": {
+          "runner": "operation-runner",
+          "config": {
+            "operation": "start"
+          }
+        }
+      }
+    }
+  }
+}
